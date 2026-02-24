@@ -1,0 +1,175 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: rgba(21, 22, 22, 1);
+  color: #e0e0e0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+// TOPBAR
+.topbar {
+  display: flex;
+  align-items: center;
+  height: 38px;
+  background: rgba(21, 22, 22, 1);
+  padding: 0 0 0 12px;
+  user-select: none;
+
+  &__logo {
+    font-size: 13px;
+    font-weight: 400;
+    color: #c0c0c0;
+    min-width: 120px;
+  }
+
+  &__tabs {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    justify-content: center;
+  }
+
+  &__win-controls {
+    display: flex;
+    align-items: stretch;
+    height: 38px;
+  }
+}
+
+// TABS
+.tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 10px;
+  height: 38px;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  position: relative;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &--active {
+    color: #e0e0e0;
+  }
+
+  &:hover {
+    color: #aaa;
+  }
+
+  &__underline {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 2px;
+    background: #e0e0e0;
+    border-radius: 2px 2px 0 0;
+  }
+}
+
+// WINDOW BUTTONS
+.win-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 38px;
+  background: rgba(21, 22, 22, 1);
+  border: none;
+  color: #7a7a7a;
+  cursor: pointer;
+  border-radius: 0;
+  transition: background 0.1s, color 0.1s;
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  &:hover {
+    background: #393939;
+    color: #fff;
+  }
+
+  &:active {
+    background: #4a4a4a;
+  }
+
+  &--close {
+    &:hover {
+      background: #e71022;
+      color: #fff;
+    }
+
+    &:active {
+      background: #c2101d;
+    }
+  }
+}
+
+.content {
+  flex: 1;
+  display: flex;
+
+  align-items: flex-end;
+  justify-content: flex-start;
+
+  padding: 5px;
+  gap: 4px;
+}
+
+// BUTTONS
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 11px;
+  background: rgba(26, 26, 26, 1);
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: #e0e0e0;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  user-select: none;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0.85;
+  }
+
+  &:hover {
+    background: rgba(40, 40, 40, 1);
+  }
+
+  &:active {
+    background: rgba(20, 20, 20, 1);
+  }
+
+  &--wide {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
