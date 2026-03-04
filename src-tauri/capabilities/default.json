@@ -5,6 +5,42 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
-    "opener:default"
+    "opener:default",
+    "fs:default",
+    "dialog:default",
+    "fs:allow-read-text-file",
+    "fs:allow-write-text-file",
+    "fs:allow-mkdir",
+    "fs:allow-exists",
+    "fs:allow-read-dir",
+    "dialog:allow-open",
+    "dialog:allow-save",
+    "shell:default",
+    "shell:allow-execute",
+    "shell:allow-spawn",
+    "core:window:allow-start-dragging",
+    "core:window:allow-close",
+    "core:window:allow-minimize",
+    "core:window:allow-maximize",
+    "core:window:allow-unmaximize",
+    "core:window:allow-is-maximized",
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        { "path": "$DOCUMENT/**" },
+        { "path": "$DOCUMENT/Potassium/**" },
+        { "path": "$DOCUMENT/Potassium/Scripts/**" },
+        { "path": "$DOCUMENT/Potassium/monaco/**" }
+      ]
+    },
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        { "name": "curl", "cmd": "curl", "args": true },
+        { "name": "unzip", "cmd": "unzip", "args": true },
+        { "name": "mv", "cmd": "mv", "args": true },
+        { "name": "rm", "cmd": "rm", "args": true }
+      ]
+    }
   ]
 }

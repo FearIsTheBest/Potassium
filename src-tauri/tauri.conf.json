@@ -9,18 +9,31 @@
     "beforeBuildCommand": "npm run build",
     "frontendDist": "../dist"
   },
+  "plugins": {
+    "shell": {
+      "open": true
+    }
+  },
   "app": {
+    "macOSPrivateApi": true,
     "windows": [
       {
         "title": "potassium",
-        "width": 800,
-        "height": 600,
+        "width": 880,
+        "height": 580,
         "decorations": false,
-        "transparent": false
+        "minWidth": 880,
+        "minHeight": 580,
+        "transparent": true,
+        "shadow": true
       }
     ],
     "security": {
-      "csp": null
+      "csp": null,
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["$DOCUMENT/**"]
+      }
     }
   },
   "bundle": {
