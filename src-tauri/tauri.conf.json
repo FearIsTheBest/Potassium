@@ -16,6 +16,7 @@
   },
   "app": {
     "macOSPrivateApi": true,
+    "withGlobalTauri": false,
     "windows": [
       {
         "title": "potassium",

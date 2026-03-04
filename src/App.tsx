@@ -12,6 +12,7 @@ import { listen } from "@tauri-apps/api/event";
 
 type TabId = "Editor" | "Settings" | "ScriptHub";
 type EditorTab = { id: string; name: string; content: string; path: string | null };
+document.addEventListener('contextmenu', e => e.preventDefault());
 
 const DEFAULT_CONTENT = `print("Hello, World!")`;
 
