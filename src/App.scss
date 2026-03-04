@@ -706,3 +706,14 @@ body {
 .copy-btn:hover {
   background: #5881fc;
 }
+
+.monaco-editor,
+.monaco-editor * {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+} 
+
+input, textarea {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+}
