@@ -9,6 +9,7 @@ import { Command } from "@tauri-apps/plugin-shell";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { listen } from "@tauri-apps/api/event";
+import { load } from "@tauri-apps/plugin-store";
 
 type TabId = "Editor" | "Settings" | "ScriptHub";
 type EditorTab = { id: string; name: string; content: string; path: string | null };
@@ -39,6 +40,7 @@ interface ScriptApiResponse {
 
 export default function App() {
   const appWindow = getCurrentWindow();
+  const storeRef = useRef<Awaited<ReturnType<typeof load>> | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>("Editor");
   const [files, setFiles] = useState<{ name: string; path: string; content: string }[]>([]);
   const [activeFile, setActiveFile] = useState<string | null>(null);
@@ -80,6 +82,40 @@ export default function App() {
     return () => { unlisten.then(f => f()); };
   }, []);
 
+  useEffect(() => {
+    const loadSettings = async () => {
+      const store = await load("settings.json", { autoSave: true, defaults: {} });
+      storeRef.current = store;
+
+      const mm = await store.get<boolean>("miniMap") ?? false;
+      const sc = await store.get<boolean>("smoothCursor") ?? false;
+      const ss = await store.get<boolean>("smoothScrolling") ?? false;
+      const ef = await store.get<boolean>("editorFolding") ?? false;
+      const fl = await store.get<boolean>("fontLigatures") ?? false;
+      const ww = await store.get<boolean>("wordWrap") ?? false;
+      const aot = await store.get<boolean>("alwaysOnTop") ?? false;
+      const aa = await store.get<boolean>("autoAttach") ?? false;
+
+      setMiniMap(mm);
+      setSmoothCursor(sc);
+      setSmoothScrolling(ss);
+      setEditorFolding(ef);
+      setFontLigatures(fl);
+      setWordWrap(ww);
+      setAlwaysOnTop(aot);
+      setAutoAttach(aa);
+
+      sendToActive({ type: "setOption", option: "minimap", value: { enabled: mm } });
+      sendToActive({ type: "setOption", option: "cursorSmoothCaretAnimation", value: sc ? "on" : "off" });
+      sendToActive({ type: "setOption", option: "smoothScrolling", value: ss });
+      sendToActive({ type: "setOption", option: "folding", value: ef });
+      sendToActive({ type: "setOption", option: "fontLigatures", value: fl });
+      sendToActive({ type: "setOption", option: "wordWrap", value: ww ? "on" : "off" });
+      if (aot) getCurrentWindow().setAlwaysOnTop(true);
+    };
+    loadSettings();
+  }, []);
+
   const syncActiveTabId = (id: string) => {
     activeTabIdRef.current = id;
     setActiveTabId(id);
@@ -93,24 +129,21 @@ export default function App() {
     sendToTab(activeTabIdRef.current, msg);
   };
 
-  const toggleMiniMap = () => {
+  const toggleMiniMap = async () => {
     const n = !miniMap;
     setMiniMap(n);
+    await storeRef.current?.set("miniMap", n);
+    await storeRef.current?.save();
     sendToActive({ type: "setOption", option: "minimap", value: { enabled: n } });
   };
 
-  const toggleSmoothCursor = () => { const n = !smoothCursor; setSmoothCursor(n); sendToActive({ type: "setOption", option: "cursorSmoothCaretAnimation", value: n ? "on" : "off" }); };
-  const toggleSmoothScrolling = () => { const n = !smoothScrolling; setSmoothScrolling(n); sendToActive({ type: "setOption", option: "smoothScrolling", value: n }); };
-  const toggleEditorFolding = () => { const n = !editorFolding; setEditorFolding(n); sendToActive({ type: "setOption", option: "folding", value: n }); };
-  const toggleFontLigatures = () => { const n = !fontLigatures; setFontLigatures(n); sendToActive({ type: "setOption", option: "fontLigatures", value: n }); };
-  const toggleWordWrap = () => { const n = !wordWrap; setWordWrap(n); sendToActive({ type: "setOption", option: "wordWrap", value: n ? "on" : "off" }); };
-  const toggleAlwaysOnTop = () => {
-    const n = !alwaysOnTop;
-    setAlwaysOnTop(n);
-    getCurrentWindow().setAlwaysOnTop(n);
-  };
-  const toggleAutoAttach = () => { setAutoAttach(p => !p); };
-
+  const toggleSmoothCursor = async () => { const n = !smoothCursor; setSmoothCursor(n); await storeRef.current?.set("smoothCursor", n); await storeRef.current?.save(); sendToActive({ type: "setOption", option: "cursorSmoothCaretAnimation", value: n ? "on" : "off" }); };
+  const toggleSmoothScrolling = async () => { const n = !smoothScrolling; setSmoothScrolling(n); await storeRef.current?.set("smoothScrolling", n); await storeRef.current?.save(); sendToActive({ type: "setOption", option: "smoothScrolling", value: n }); };
+  const toggleEditorFolding = async () => { const n = !editorFolding; setEditorFolding(n); await storeRef.current?.set("editorFolding", n); await storeRef.current?.save(); sendToActive({ type: "setOption", option: "folding", value: n }); };
+  const toggleFontLigatures = async () => { const n = !fontLigatures; setFontLigatures(n); await storeRef.current?.set("fontLigatures", n); await storeRef.current?.save(); sendToActive({ type: "setOption", option: "fontLigatures", value: n }); };
+  const toggleWordWrap = async () => { const n = !wordWrap; setWordWrap(n); await storeRef.current?.set("wordWrap", n); await storeRef.current?.save(); sendToActive({ type: "setOption", option: "wordWrap", value: n ? "on" : "off" }); };
+  const toggleAlwaysOnTop = async () => { const n = !alwaysOnTop; setAlwaysOnTop(n); await storeRef.current?.set("alwaysOnTop", n); await storeRef.current?.save(); getCurrentWindow().setAlwaysOnTop(n); };
+  const toggleAutoAttach = async () => { const n = !autoAttach; setAutoAttach(n); await storeRef.current?.set("autoAttach", n); await storeRef.current?.save(); };
   const handleAttach = async () => {
 
     if (attached) {
@@ -185,6 +218,15 @@ export default function App() {
         const content = pendingContent.current[tabId] ?? DEFAULT_CONTENT;
         sendToTab(tabId, { type: "setText", content });
         delete pendingContent.current[tabId];
+
+        if (storeRef.current) {
+          storeRef.current.get<boolean>("miniMap").then(v => sendToTab(tabId, { type: "setOption", option: "minimap", value: { enabled: v ?? false } }));
+          storeRef.current.get<boolean>("smoothCursor").then(v => sendToTab(tabId, { type: "setOption", option: "cursorSmoothCaretAnimation", value: v ? "on" : "off" }));
+          storeRef.current.get<boolean>("smoothScrolling").then(v => sendToTab(tabId, { type: "setOption", option: "smoothScrolling", value: v ?? false }));
+          storeRef.current.get<boolean>("editorFolding").then(v => sendToTab(tabId, { type: "setOption", option: "folding", value: v ?? false }));
+          storeRef.current.get<boolean>("fontLigatures").then(v => sendToTab(tabId, { type: "setOption", option: "fontLigatures", value: v ?? false }));
+          storeRef.current.get<boolean>("wordWrap").then(v => sendToTab(tabId, { type: "setOption", option: "wordWrap", value: v ? "on" : "off" }));
+        }
       }
 
       if (e.data?.type === "contentChanged") {
