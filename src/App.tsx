@@ -386,30 +386,27 @@ export default function App() {
           </button>
         </div>
         <div className="topbar__win-controls">
-          {}
           <button className="win-btn" onClick={() => appWindow.minimize()}>
             <svg viewBox="0 0 24 24" fill="none">
-              <path d="M17 12H7V11H17V12Z" fill="currentColor" fillRule="evenodd" />
+              <path d="M18 12.5H6V11.5H18V12.5Z" fill="currentColor" fillRule="evenodd" />
             </svg>
           </button>
 
-          {}
-          <button className="win-btn" onClick={async () => {
-            if (await appWindow.isMaximized()) {
-              appWindow.unmaximize();
-            } else {
-              appWindow.maximize();
-            }
-          }}>
-            <svg viewBox="0 0 24 24" fill="none">
-              <rect x="7" y="7" width="10" height="10" stroke="currentColor" strokeWidth="1.6" />
-            </svg>
-          </button>
+        <button className="win-btn" onClick={async () => {
+          if (await appWindow.isMaximized()) {
+            appWindow.unmaximize();
+          } else {
+            appWindow.maximize();
+          }
+        }}>
+          <svg viewBox="0 0 24 24" fill="none">
+            <rect x="6" y="6" width="11" height="11" stroke="currentColor" strokeWidth="1" />
+          </svg>
+        </button>
 
-          {}
           <button className="win-btn win-btn--close" onClick={() => appWindow.close()}>
             <svg viewBox="0 0 24 24" fill="none">
-              <path d="M17 7L7 17M7 7L17 17" stroke="currentColor" strokeWidth="1.6" />
+              <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="1.6" />
             </svg>
           </button>
         </div>
